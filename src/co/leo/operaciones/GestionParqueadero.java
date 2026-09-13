@@ -31,158 +31,80 @@ public class GestionParqueadero {
         bicicleta.modificarFechaIngreso(LocalDateTime.now());
         return bicicleta;
     }
-
     public boolean registrarIngreso(Bicicleta bicicleta) {
-
-        if (bicicleta == null) {
-            return false;
-        }
-
-        if (obtenerCantidadBicicletas() >= CAPACIDAD) {
-            return false;
-        }
-
-        if (buscarPorPlaca(bicicleta.obtenerPlaca()) != null) {
-            return false;
-        }
-
+        if (bicicleta == null) {return false;}
+        if (obtenerCantidadBicicletas() >= CAPACIDAD) {return false;}
+        if (buscarPorPlaca(bicicleta.obtenerPlaca()) != null) {return false;}
         for (int i = 0; i < bicicletas.length; i++) {
-
             if (bicicletas[i] == null) {
                 bicicletas[i] = bicicleta;
                 return true;
             }
         }
-
         return false;
     }
-
     public Bicicleta buscarPorPlaca(String placa) {
-
-        if (placa == null) {
-            return null;
-        }
-
+        if (placa == null) {return null;}
         for (Bicicleta bicicleta : bicicletas) {
-
-            if (bicicleta != null &&
-                    bicicleta.obtenerPlaca().equalsIgnoreCase(placa)) {
-
-                return bicicleta;
-            }
+            if (bicicleta != null && bicicleta.obtenerPlaca().equalsIgnoreCase(placa)) {return bicicleta;}
         }
-
         return null;
     }
-
     public boolean verificarDuenio(Bicicleta bicicleta, String dni) {
-
-        if (bicicleta == null || dni == null) {
-            return false;
-        }
-
+        if (bicicleta == null || dni == null) {return false;}
         return bicicleta.obtenerDni().equals(dni);
     }
-
     public double calcularValor(Bicicleta bicicleta) {
-
-        if (bicicleta == null ||
-                bicicleta.obtenerFechaIngreso() == null) {
-            return 0;
-        }
-
+        if (bicicleta == null || bicicleta.obtenerFechaIngreso() == null) {return 0;}
         long minutos = Duration.between(
                 bicicleta.obtenerFechaIngreso(),
                 LocalDateTime.now()
         ).toMinutes();
-
-        if (minutos <= 0) {
-            minutos = 1;
-        }
-
+        if (minutos <= 0) {minutos = 1;}
         return minutos * VALOR_MINUTO;
     }
-
-    public Pago registrarPago(
-            Bicicleta bicicleta,
-            String metodoPago) {
-
+    public MetodoPago registrarPago(Bicicleta bicicleta, String metodoPago) {
         double valor = calcularValor(bicicleta);
-
-        Pago pago = new Pago();
-
+        MetodoPago pago = new MetodoPago();
         pago.modificarValor(valor);
         pago.modificarMetodoPago(metodoPago);
-        pago.modificarFechaPago(LocalDateTime.now());
-
+        pago.modificarFechaPago(LocalDate.now());
         pagos.add(pago);
-
         return pago;
     }
-
     public boolean liberarCupo(String placa) {
-
         for (int i = 0; i < bicicletas.length; i++) {
-
-            if (bicicletas[i] != null &&
-                    bicicletas[i].obtenerPlaca()
-                            .equalsIgnoreCase(placa)) {
-
+            if (bicicletas[i] != null && bicicletas[i].obtenerPlaca().equalsIgnoreCase(placa)) {
                 bicicletas[i] = null;
                 return true;
             }
         }
-
         return false;
     }
-
-    public Reporte generarReporte(LocalDate fecha) {
-
-        Reporte reporte = new Reporte();
-
+    public Reportes generarReporte(LocalDate fecha) {
+        Reportes reporte=new Reportes();
         int cantidad = 0;
         double valor = 0;
-
-        for (Pago pago : pagos) {
-
-            if (pago.obtenerFechaPago()
-                    .toLocalDate()
-                    .equals(fecha)) {
-
+        for (MetodoPago pago : pagos) {
+            if (pago.obtenerFechaPago().equals(fecha)) {
                 cantidad++;
                 valor += pago.obtenerValor();
             }
         }
-
         reporte.modificarFecha(fecha);
         reporte.modificarNumeroBicicletas(cantidad);
         reporte.modificarValorIngresado(valor);
-
         return reporte;
     }
-
     public int obtenerCantidadBicicletas() {
-
         int cantidad = 0;
-
         for (Bicicleta bicicleta : bicicletas) {
-
-            if (bicicleta != null) {
-                cantidad++;
-            }
+            if (bicicleta != null) {cantidad++;}
         }
-
         return cantidad;
     }
-
-    public int obtenerCuposDisponibles() {
-        return CAPACIDAD - obtenerCantidadBicicletas();
-    }
-
-    public Bicicleta[] obtenerBicicletas() {
-        return bicicletas;
-    }
-
+    public int obtenerCuposDisponibles() {return CAPACIDAD - obtenerCantidadBicicletas();}
+    public Bicicleta[] obtenerBicicletas() {return bicicletas;}
     public List<MetodoPago> obtenerPagos() {
         return pagos;
     }
