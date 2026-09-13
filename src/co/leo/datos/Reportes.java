@@ -7,7 +7,7 @@ public class Reportes {
     private int numeroBicicletas;
     private double valorIngresado;
 
-    public Reportes() {
+    public Reporte() {
     }
     public LocalDate obtenerFecha() {return fecha;}
     public void modificarFecha(LocalDate fecha) {this.fecha = fecha;}

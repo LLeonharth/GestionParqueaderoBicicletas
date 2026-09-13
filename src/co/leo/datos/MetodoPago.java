@@ -7,7 +7,7 @@ public class MetodoPago {
     private String metodoPago;
     private LocalDateTime fechaPago;
 
-    public MetodoPago() {
+    public MetodosPago() {
     }
     public double obtenerValor() {return valor;}
     public void modificarValor(double valor) {this.valor = valor;}
