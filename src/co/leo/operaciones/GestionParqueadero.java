@@ -8,15 +8,16 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 
 public class GestionParqueadero {
-    private static final int CAPACIDAD = 20;
-    private static final double VALOR_MINUTO = 10.0;
-    private Bicicleta[] bicicletas;
-    private List<MetodoPago> pagos;
+    private int capacidad;
+    private double valorMinuto;
+    private ArrayList<Bicicleta> bicicletas;
+    private ArrayList<MetodoPago> pagos;
     public GestionParqueadero() {
-        bicicletas=new Bicicleta[CAPACIDAD];
+        capacidad = 20;
+        valorMinuto = 10;
+        bicicletas=new ArrayList<>();
         pagos=new ArrayList<>();
     }
     public Bicicleta crearBicicleta(String placa, String nombres,
@@ -33,35 +34,27 @@ public class GestionParqueadero {
     }
     public boolean registrarIngreso(Bicicleta bicicleta) {
         if (bicicleta == null) {return false;}
-        if (obtenerCantidadBicicletas() >= CAPACIDAD) {return false;}
+        if (obtenerCantidadBicicletas() >= capacidad) {return false;}
         if (buscarPorPlaca(bicicleta.obtenerPlaca()) != null) {return false;}
-        for (int i = 0; i < bicicletas.length; i++) {
-            if (bicicletas[i] == null) {
-                bicicletas[i] = bicicleta;
-                return true;
-            }
-        }
-        return false;
+        bicicletas.add(bicicleta);
+        return true;
     }
     public Bicicleta buscarPorPlaca(String placa) {
         if (placa == null) {return null;}
         for (Bicicleta bicicleta : bicicletas) {
-            if (bicicleta != null && bicicleta.obtenerPlaca().equalsIgnoreCase(placa)) {return bicicleta;}
+            if (bicicleta.obtenerPlaca().equalsIgnoreCase(placa)) {return bicicleta;}
         }
         return null;
     }
-    public boolean verificarDuenio(Bicicleta bicicleta, String dni) {
+    public boolean verificarDuenno(Bicicleta bicicleta, String dni) {
         if (bicicleta == null || dni == null) {return false;}
         return bicicleta.obtenerDni().equals(dni);
     }
     public double calcularValor(Bicicleta bicicleta) {
         if (bicicleta == null || bicicleta.obtenerFechaIngreso() == null) {return 0;}
-        long minutos = Duration.between(
-                bicicleta.obtenerFechaIngreso(),
-                LocalDateTime.now()
-        ).toMinutes();
+        long minutos = Duration.between(bicicleta.obtenerFechaIngreso(), LocalDateTime.now()).toMinutes();
         if (minutos <= 0) {minutos = 1;}
-        return minutos * VALOR_MINUTO;
+        return minutos * valorMinuto;
     }
     public MetodoPago registrarPago(Bicicleta bicicleta, String metodoPago) {
         double valor = calcularValor(bicicleta);
@@ -73,9 +66,9 @@ public class GestionParqueadero {
         return pago;
     }
     public boolean liberarCupo(String placa) {
-        for (int i = 0; i < bicicletas.length; i++) {
-            if (bicicletas[i] != null && bicicletas[i].obtenerPlaca().equalsIgnoreCase(placa)) {
-                bicicletas[i] = null;
+        for (int i = 0; i < bicicletas.size(); i++) {
+            if (bicicletas.get(i).obtenerPlaca().equalsIgnoreCase(placa)) {
+                bicicletas.remove(i);
                 return true;
             }
         }
@@ -96,16 +89,26 @@ public class GestionParqueadero {
         reporte.modificarValorIngresado(valor);
         return reporte;
     }
-    public int obtenerCantidadBicicletas() {
-        int cantidad = 0;
-        for (Bicicleta bicicleta : bicicletas) {
-            if (bicicleta != null) {cantidad++;}
-        }
-        return cantidad;
-    }
-    public int obtenerCuposDisponibles() {return CAPACIDAD - obtenerCantidadBicicletas();}
-    public Bicicleta[] obtenerBicicletas() {return bicicletas;}
-    public List<MetodoPago> obtenerPagos() {
+    public int obtenerCantidadBicicletas() {return bicicletas.size();}
+    public int obtenerCuposDisponibles() {return capacidad - obtenerCantidadBicicletas();}
+    public ArrayList<Bicicleta> obtenerBicicletas() {return bicicletas;}
+    public ArrayList<MetodoPago> obtenerPagos() {
         return pagos;
+    }
+    public Reportes registrarSalida(String placa, String dni, String metodoPago) {
+        Bicicleta bicicleta = buscarPorPlaca(placa);
+        if (bicicleta == null) {
+            System.out.println("Error: La bicicleta con placa " + placa + " no está en el parqueadero.");
+            return null;
+        }
+        if (!verificarDuenno(bicicleta, dni)) {
+            System.out.println("Error: El DNI no coincide con el dueño registrado.");
+            return null;
+        }
+        MetodoPago pagoRealizado = registrarPago(bicicleta, metodoPago);
+        System.out.println("Pago registrado exitosamente por un valor de: $" + pagoRealizado.obtenerValor());
+        liberarCupo(placa);
+        LocalDate hoy = LocalDate.now();
+        return generarReporte(hoy);
     }
 }
