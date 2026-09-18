@@ -66,7 +66,7 @@ public class Ventana extends JFrame {
         pnlIngreso.add(new JLabel());
         pnlIngreso.add(btnRegistrarIngreso);
 
-        JPanel pnlSalida = new JPanel(new GridLayout(3, 2, 6, 6));
+        JPanel pnlSalida = new JPanel(new GridLayout(4, 2, 6, 6));
         pnlSalida.setBorder(BorderFactory.createTitledBorder("2. Registrar salida"));
         pnlSalida.add(new JLabel("Placa:"));
         txtPlacaSalida = new JTextField();
