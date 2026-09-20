@@ -215,9 +215,7 @@ public class Ventana extends JFrame {
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            System.err.println("No se pudo establecer el Look and Feel.");
-        }
+        } catch (Exception e) {System.err.println("No se pudo establecer el Look and Feel.");}
         SwingUtilities.invokeLater(() -> {
             Ventana ventana = new Ventana();
             ventana.setVisible(true);
