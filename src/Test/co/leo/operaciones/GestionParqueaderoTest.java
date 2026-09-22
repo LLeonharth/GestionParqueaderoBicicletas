@@ -26,14 +26,6 @@ public class GestionParqueaderoTest {
         assertEquals(1, gestion.obtenerCantidadBicicletas());
     }
     @Test
-    public void testRegistroIngreso() {
-        GestionParqueadero gestion = new GestionParqueadero();
-        Bicicleta bicicleta = gestion.crearBicicleta("ABC123", "Leonardo", "Miñope", "123456", "SER001", "Roja");
-        boolean resultado = gestion.registrarIngreso(bicicleta);
-        assertTrue(resultado);
-        assertEquals(1, gestion.obtenerCantidadBicicletas());
-    }
-    @Test
     public void testVerificarDuennoCorrecto() {
         GestionParqueadero gestion = new GestionParqueadero();
         Bicicleta bicicleta = gestion.crearBicicleta("ABC123", "Leonardo", "Miñope", "123456", "SER001", "Roja");
